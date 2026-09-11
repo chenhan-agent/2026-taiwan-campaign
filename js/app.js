@@ -311,6 +311,16 @@ function createEventCardHTML(evt) {
         </div>
       </div>
 
+      ${evt.sourceUrl ? `
+        <div class="event-source-row">
+          <i data-lucide="link-2"></i>
+          <span>情報來源：</span>
+          <a href="${evt.sourceUrl}" target="_blank" rel="noopener" class="source-link" title="開啟情報原始來源連結">
+            ${evt.sourceName || '公開媒體報導 / 官方公告'} <i data-lucide="external-link" style="width:11px;height:11px;"></i>
+          </a>
+        </div>
+      ` : ''}
+
       <div class="event-card-actions">
         <button class="btn btn-outline btn-sm" onclick="openEventDetailModal('${evt.id}')">
           <i data-lucide="arrow-up-right"></i> 查看詳情
@@ -328,6 +338,26 @@ function renderCandidates() {
   grid.innerHTML = allCandidates.map(cand => {
     const partyStyle = PARTY_COLORS[cand.party] || PARTY_COLORS['無黨籍'];
     const countEvents = allEvents.filter(e => e.candidateId === cand.id).length;
+    const candUpcoming = allEvents.filter(e => e.candidateId === cand.id).slice(0, 2);
+
+    const upcomingHTML = candUpcoming.length > 0 ? `
+      <div class="cand-events-preview">
+        <div class="preview-title"><i data-lucide="calendar"></i> 近期公開造勢與行程：</div>
+        <div class="preview-event-list">
+          ${candUpcoming.map(e => `
+            <div class="preview-event-item" onclick="openEventDetailModal('${e.id}')">
+              <span class="preview-event-date">${e.date.substring(5)}</span>
+              <span class="preview-event-title" title="${e.title}">${e.title}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : `
+      <div class="cand-events-preview">
+        <div class="preview-title"><i data-lucide="calendar"></i> 近期公開造勢與行程：</div>
+        <p class="preview-empty-text">新行程確認中，歡迎熱心通報！</p>
+      </div>
+    `;
 
     return `
       <div class="candidate-card card">
@@ -347,16 +377,14 @@ function renderCandidates() {
             「${cand.slogan}」
           </div>
 
-          <div class="policy-tags">
-            ${cand.policies.map(p => `<span class="policy-tag"><i data-lucide="check"></i> ${p}</span>`).join('')}
-          </div>
+          ${upcomingHTML}
         </div>
 
         <div>
           <div class="cand-card-footer">
-            <span class="sub-text"><i data-lucide="calendar"></i> 公開行程：<strong>${countEvents} 場</strong></span>
+            <span class="sub-text"><i data-lucide="calendar"></i> 登錄行程：<strong>${countEvents} 場</strong></span>
             <button class="btn btn-outline btn-sm" onclick="filterByCandidate('${cand.name}')">
-              <i data-lucide="calendar"></i> 查行程
+              <i data-lucide="calendar"></i> 查看全部行程
             </button>
           </div>
           
@@ -483,6 +511,17 @@ function openEventDetailModal(eventId) {
   };
   const modalAvatar = document.getElementById('modal-candidate-avatar');
   modalAvatar.innerHTML = getCandidateAvatarHTML(cand, 'lg');
+
+  // Source Link in Modal
+  const sourceRow = document.getElementById('modal-source-row');
+  const sourceLink = document.getElementById('modal-event-source');
+  if (evt.sourceUrl && sourceRow && sourceLink) {
+    sourceRow.classList.remove('hidden');
+    sourceLink.setAttribute('href', evt.sourceUrl);
+    sourceLink.innerHTML = `<i data-lucide="link-2"></i> ${evt.sourceName || '檢視情報原始來源連結'}`;
+  } else if (sourceRow) {
+    sourceRow.classList.add('hidden');
+  }
 
   // Google Calendar URL Generator
   const gcalBtn = document.getElementById('btn-add-gcal');

@@ -1048,29 +1048,107 @@ button, input, select, textarea {
   line-height: 1.4;
 }
 
-.policy-tags {
+/* Event Source Link Row */
+.event-source-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-subtle);
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
-.policy-tag {
-  background: var(--bg-main);
-  border: 1px solid var(--border-color);
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  padding: 2px 7px;
-  border-radius: 6px;
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.source-link:hover {
+  text-decoration: underline;
+  color: var(--primary-hover);
+}
+
+.source-link-modal {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.92rem;
 }
 
-.policy-tag .lucide {
-  color: var(--accent-green);
-  width: 12px;
-  height: 12px;
+.source-link-modal:hover {
+  text-decoration: underline;
+}
+
+/* Candidate Upcoming Events Preview in Card */
+.cand-events-preview {
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.preview-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.02em;
+}
+
+.preview-event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.preview-event-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 2px 0;
+}
+
+.preview-event-date {
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.preview-event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.preview-event-item:hover .preview-event-title {
+  color: var(--primary);
+}
+
+.preview-empty-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .cand-card-footer {
