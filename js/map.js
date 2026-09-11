@@ -49,7 +49,9 @@ function updateMapMarkers(events) {
   markersGroup.clearLayers();
 
   const bounds = L.latLngBounds();
+  const taiwanBounds = L.latLngBounds();
   let hasValidCoords = false;
+  let hasTaiwanCoords = false;
 
   events.forEach(evt => {
     if (evt.lat && evt.lng) {
@@ -111,10 +113,17 @@ function updateMapMarkers(events) {
       marker.bindPopup(popupContent);
       markersGroup.addLayer(marker);
       bounds.extend([evt.lat, evt.lng]);
+
+      if (evt.lat >= 21.0 && evt.lat <= 26.5 && evt.lng >= 118.0 && evt.lng <= 122.5) {
+        taiwanBounds.extend([evt.lat, evt.lng]);
+        hasTaiwanCoords = true;
+      }
     }
   });
 
-  if (hasValidCoords && events.length > 0) {
+  if (hasTaiwanCoords) {
+    leafletMap.fitBounds(taiwanBounds, { padding: [50, 50], maxZoom: 12 });
+  } else if (hasValidCoords && events.length > 0) {
     leafletMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
   }
 

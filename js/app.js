@@ -161,10 +161,24 @@ function resetAllFilters() {
   document.getElementById('select-party').value = 'all';
   document.getElementById('select-type').value = 'all';
   document.getElementById('select-date').value = 'all';
-  document.getElementById('select-sort').value = 'upcoming-first';
+  document.getElementById('select-sort').value = 'date-desc';
   document.getElementById('btn-clear-search').classList.add('hidden');
   syncQuickPills('all');
   renderEvents();
+}
+
+function parseTimeScore(timeStr) {
+  if (!timeStr) return 1200;
+  if (/(\d{1,2}):(\d{2})/.test(timeStr)) {
+    const match = timeStr.match(/(\d{1,2}):(\d{2})/);
+    return parseInt(match[1], 10) * 100 + parseInt(match[2], 10);
+  }
+  if (timeStr.includes('早市') || timeStr.includes('上午') || timeStr.includes('晨間')) return 830;
+  if (timeStr.includes('中午')) return 1200;
+  if (timeStr.includes('下午') || timeStr.includes('授證') || timeStr.includes('健走')) return 1430;
+  if (timeStr.includes('黃昏') || timeStr.includes('傍晚')) return 1700;
+  if (timeStr.includes('晚間') || timeStr.includes('夜市') || timeStr.includes('開講') || timeStr.includes('大會')) return 1900;
+  return 1000;
 }
 
 function getFilteredEvents() {
@@ -182,6 +196,8 @@ function getFilteredEvents() {
       const matchSearch = 
         evt.title.toLowerCase().includes(query) ||
         evt.candidateName.toLowerCase().includes(query) ||
+        evt.party.toLowerCase().includes(query) ||
+        evt.region.toLowerCase().includes(query) ||
         evt.locationName.toLowerCase().includes(query) ||
         evt.district.toLowerCase().includes(query) ||
         evt.address.toLowerCase().includes(query);
@@ -193,13 +209,13 @@ function getFilteredEvents() {
     if (type !== 'all' && evt.type !== type) return false;
 
     if (dateFilter === 'upcoming') {
-      return evt.status === 'confirmed' || evt.date >= todayStr;
+      return evt.date > todayStr;
     }
     if (dateFilter === 'today') {
       return evt.date === todayStr;
     }
     if (dateFilter === 'completed') {
-      return evt.status === 'completed' || evt.date < todayStr;
+      return evt.date < todayStr;
     }
     if (dateFilter === 'this-week') {
       return evt.date >= todayStr && evt.date <= '2026-09-18';
@@ -209,17 +225,19 @@ function getFilteredEvents() {
   });
 
   filtered.sort((a, b) => {
-    if (sort === 'upcoming-first') {
-      const aUpcoming = a.status === 'confirmed' || a.date > todayStr;
-      const bUpcoming = b.status === 'confirmed' || b.date > todayStr;
-      if (aUpcoming && !bUpcoming) return -1;
-      if (!aUpcoming && bUpcoming) return 1;
-      if (aUpcoming) return a.date.localeCompare(b.date);
-      return b.date.localeCompare(a.date);
+    if (sort === 'date-desc') {
+      const dateDiff = b.date.localeCompare(a.date);
+      if (dateDiff !== 0) return dateDiff;
+      return parseTimeScore(b.time) - parseTimeScore(a.time);
     }
-    if (sort === 'date-asc') return a.date.localeCompare(b.date);
-    if (sort === 'date-desc') return b.date.localeCompare(a.date);
-    if (sort === 'candidate') return a.region.localeCompare(b.region, 'zh-TW') || a.candidateName.localeCompare(b.candidateName, 'zh-TW');
+    if (sort === 'date-asc') {
+      const dateDiff = a.date.localeCompare(b.date);
+      if (dateDiff !== 0) return dateDiff;
+      return parseTimeScore(a.time) - parseTimeScore(b.time);
+    }
+    if (sort === 'candidate') {
+      return a.region.localeCompare(b.region, 'zh-TW') || a.candidateName.localeCompare(b.candidateName, 'zh-TW');
+    }
     return 0;
   });
 
@@ -294,13 +312,17 @@ function createEventCardHTML(evt) {
           <span class="type-badge">
             <i data-lucide="tag"></i> ${evt.type}
           </span>
-          ${evt.status === 'completed' ? `
-            <span class="status-badge" style="color: #94a3b8; border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.08);">
-              <i data-lucide="check-circle-2"></i> 已舉行實錄
-            </span>
-          ` : `
+          ${evt.date > '2026-09-11' ? `
             <span class="status-badge" style="color: #10b981; border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08);">
               <i data-lucide="calendar-clock"></i> 即將舉行
+            </span>
+          ` : evt.date === '2026-09-11' ? `
+            <span class="status-badge" style="color: #f59e0b; border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.1);">
+              <i data-lucide="flame"></i> 今日動態
+            </span>
+          ` : `
+            <span class="status-badge" style="color: #94a3b8; border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.08);">
+              <i data-lucide="check-circle-2"></i> 已舉行實錄
             </span>
           `}
         </div>
@@ -358,15 +380,13 @@ function renderCandidates() {
   const grid = document.getElementById('candidates-grid');
   grid.innerHTML = allCandidates.map(cand => {
     const partyStyle = PARTY_COLORS[cand.party] || PARTY_COLORS['無黨籍'];
-    const countEvents = allEvents.filter(e => e.candidateId === cand.id).length;
     const candEvents = allEvents.filter(e => e.candidateId === cand.id);
+    const countEvents = candEvents.length;
+
     candEvents.sort((a, b) => {
-      const aUpcoming = a.status === 'confirmed' || a.date >= '2026-09-11';
-      const bUpcoming = b.status === 'confirmed' || b.date >= '2026-09-11';
-      if (aUpcoming && !bUpcoming) return -1;
-      if (!aUpcoming && bUpcoming) return 1;
-      if (aUpcoming) return a.date.localeCompare(b.date);
-      return b.date.localeCompare(a.date);
+      const dateDiff = b.date.localeCompare(a.date);
+      if (dateDiff !== 0) return dateDiff;
+      return parseTimeScore(b.time) - parseTimeScore(a.time);
     });
     const candUpcoming = candEvents.slice(0, 2);
 
@@ -377,7 +397,7 @@ function renderCandidates() {
           ${candUpcoming.map(e => `
             <div class="preview-event-item" onclick="openEventDetailModal('${e.id}')">
               <span class="preview-event-date">${e.date.substring(5)}</span>
-              <span class="preview-event-title" title="${e.title}">${e.status === 'confirmed' ? '🔥 ' : ''}${e.title}</span>
+              <span class="preview-event-title" title="${e.title}">${e.date > '2026-09-11' ? '🔥 ' : e.date === '2026-09-11' ? '⚡ ' : ''}${e.title}</span>
             </div>
           `).join('')}
         </div>
@@ -447,7 +467,18 @@ function renderCandidates() {
 }
 
 function filterByCandidate(candidateName) {
-  document.getElementById('input-search').value = candidateName;
+  // Clear conflicting filters so candidate events are never accidentally filtered out
+  document.getElementById('select-region').value = 'all';
+  document.getElementById('select-party').value = 'all';
+  document.getElementById('select-type').value = 'all';
+  document.getElementById('select-date').value = 'all';
+  document.getElementById('select-sort').value = 'date-desc';
+  syncQuickPills('all');
+
+  const searchInput = document.getElementById('input-search');
+  searchInput.value = candidateName;
+  document.getElementById('btn-clear-search').classList.remove('hidden');
+
   document.querySelector('.nav-tab[data-target="tab-schedule"]').click();
   renderEvents();
 }
@@ -525,6 +556,27 @@ function openEventDetailModal(eventId) {
   document.getElementById('modal-party-badge').style.background = partyStyle.bg;
 
   document.getElementById('modal-event-type').innerText = evt.type;
+
+  const verifiedBadge = document.getElementById('modal-verified-badge');
+  if (verifiedBadge) {
+    if (evt.date > '2026-09-11') {
+      verifiedBadge.innerHTML = '<i data-lucide="calendar-clock"></i> 即將舉行';
+      verifiedBadge.style.color = '#10b981';
+      verifiedBadge.style.borderColor = 'rgba(16,185,129,0.4)';
+      verifiedBadge.style.background = 'rgba(16,185,129,0.1)';
+    } else if (evt.date === '2026-09-11') {
+      verifiedBadge.innerHTML = '<i data-lucide="flame"></i> 今日動態';
+      verifiedBadge.style.color = '#f59e0b';
+      verifiedBadge.style.borderColor = 'rgba(245,158,11,0.4)';
+      verifiedBadge.style.background = 'rgba(245,158,11,0.1)';
+    } else {
+      verifiedBadge.innerHTML = '<i data-lucide="check-circle-2"></i> 已舉行實錄';
+      verifiedBadge.style.color = '#94a3b8';
+      verifiedBadge.style.borderColor = 'rgba(148,163,184,0.3)';
+      verifiedBadge.style.background = 'rgba(148,163,184,0.08)';
+    }
+  }
+
   document.getElementById('modal-event-title').innerText = evt.title;
   document.getElementById('modal-candidate-name').innerText = evt.candidateName;
   document.getElementById('modal-candidate-position').innerText = `${evt.position} (${evt.region} ${evt.district})`;
@@ -573,11 +625,27 @@ function openEventDetailModal(eventId) {
 
 function generateGoogleCalendarUrl(evt) {
   const cleanDate = evt.date.replace(/-/g, '');
-  const startTimeStr = cleanDate + 'T090000';
-  const endTimeStr = cleanDate + 'T120000';
+  let startHour = '090000';
+  let endHour = '120000';
+
+  if (evt.time) {
+    if (evt.time.includes('晚間') || evt.time.includes('夜市') || evt.time.includes('開講') || evt.time.includes('大會')) {
+      startHour = '183000';
+      endHour = '213000';
+    } else if (evt.time.includes('下午') || evt.time.includes('授證') || evt.time.includes('健走')) {
+      startHour = '140000';
+      endHour = '170000';
+    } else if (evt.time.includes('上午') || evt.time.includes('早市') || evt.time.includes('晨間') || evt.time.includes('登記')) {
+      startHour = '083000';
+      endHour = '113000';
+    }
+  }
+
+  const startTimeStr = cleanDate + 'T' + startHour;
+  const endTimeStr = cleanDate + 'T' + endHour;
 
   const title = encodeURIComponent(`【2026百里侯大選】${evt.candidateName} - ${evt.title}`);
-  const details = encodeURIComponent(`參選人：${evt.candidateName} (${evt.party})\n活動類型：${evt.type}\n說明：${evt.description}`);
+  const details = encodeURIComponent(`參選人：${evt.candidateName} (${evt.party})\n活動類型：${evt.type}\n時間：${evt.time}\n出處：${evt.sourceName || ''}\n說明：${evt.description}`);
   const location = encodeURIComponent(`${evt.locationName}, ${evt.address}`);
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTimeStr}/${endTimeStr}&details=${details}&location=${location}`;
@@ -660,7 +728,12 @@ function initFormSubmit() {
 
 /* --- Helpers --- */
 function getWeekday(dateStr) {
+  if (!dateStr) return '';
   const days = ['日', '一', '二', '三', '四', '五', '六'];
-  const d = new Date(dateStr);
-  return days[d.getDay()] || '六';
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    return days[d.getDay()] || '';
+  }
+  return '';
 }
