@@ -4,11 +4,11 @@
  */
 
 const PARTY_COLORS = {
-  '民主進步黨': { bg: '#e8f5e9', text: '#1b5e20', border: '#4caf50', hex: '#278542' },
-  '中國國民黨': { bg: '#e3f2fd', text: '#0d47a1', border: '#2196f3', hex: '#000099' },
-  '台灣民眾黨': { bg: '#e0f7fa', text: '#006064', border: '#00bcd4', hex: '#28C8C8' },
-  '時代力量': { bg: '#fff8e1', text: '#f57f17', border: '#ffb300', hex: '#F58220' },
-  '無黨籍': { bg: '#f5f5f5', text: '#424242', border: '#9e9e9e', hex: '#666666' }
+  '民主進步黨': { bg: 'rgba(16, 185, 129, 0.12)', text: '#10b981', border: 'rgba(16, 185, 129, 0.4)', hex: '#10b981', gradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)' },
+  '中國國民黨': { bg: 'rgba(59, 130, 246, 0.12)', text: '#3b82f6', border: 'rgba(59, 130, 246, 0.4)', hex: '#3b82f6', gradient: 'linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%)' },
+  '台灣民眾黨': { bg: 'rgba(6, 182, 212, 0.12)', text: '#06b6d4', border: 'rgba(6, 182, 212, 0.4)', hex: '#06b6d4', gradient: 'linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)' },
+  '時代力量': { bg: 'rgba(245, 158, 11, 0.12)', text: '#f59e0b', border: 'rgba(245, 158, 11, 0.4)', hex: '#f59e0b', gradient: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)' },
+  '無黨籍': { bg: 'rgba(148, 163, 184, 0.12)', text: '#94a3b8', border: 'rgba(148, 163, 184, 0.4)', hex: '#94a3b8', gradient: 'linear-gradient(135deg, #475569 0%, #64748b 100%)' }
 };
 
 const CANDIDATES_DATA = [
@@ -20,7 +20,7 @@ const CANDIDATES_DATA = [
     position: '臺北市長（爭取連任）',
     region: '臺北市',
     slogan: '市政優先，穩健前行，讓台北持續發光！',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '蔣',
     policies: ['四年市政成績延續', '捷運東環段與路網優化', '好孕生養育兒補貼升級', '都市更新加速推動'],
     socials: {
@@ -35,7 +35,7 @@ const CANDIDATES_DATA = [
     position: '臺北市長參選人',
     region: '臺北市',
     slogan: 'SOON 順，台北順起來！打造可持續運轉的城市生態系。',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '沈',
     policies: [
       '台北社福藍圖：敬老卡升級城市探索護照、健身小巴與到宅修繕',
@@ -58,7 +58,7 @@ const CANDIDATES_DATA = [
     position: '新北市長參選人',
     region: '新北市',
     slogan: '四十年市政硬底子，把新北做得更扎實！',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '李',
     policies: ['四十年工程與市政實績', '三環六線捷運全速推動', '老舊公有市場活化', '雙北生活圈緊密整合'],
     socials: {
@@ -72,7 +72,7 @@ const CANDIDATES_DATA = [
     position: '新北市長參選人',
     region: '新北市',
     slogan: '開箱新北，世代同行，新思維新首都！',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '蘇',
     policies: ['開箱新北藏寶計畫', '河左岸高科技產業走廊', '公托幼兒托育全面倍增', '青年共創藝文生活圈'],
     socials: {
@@ -90,7 +90,7 @@ const CANDIDATES_DATA = [
     position: '桃園市長（爭取連任）',
     region: '桃園市',
     slogan: '建設看得到，科技桃園穩健起飛！',
-    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '張',
     policies: ['國中小免費營養午餐延續', '婦幼局托育與照護擴大', '桃園捷運綠線全線貫通', '航空城招商與產學聚落'],
     socials: {
@@ -104,7 +104,7 @@ const CANDIDATES_DATA = [
     position: '桃園市長參選人',
     region: '桃園市',
     slogan: '新世代桃園隊，改變城市的活力新選擇！',
-    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '黃',
     policies: ['市政信箱全面傾聽民意', '南北桃園均衡發展戰略', '半導體及智慧物流廊帶', '青年公共參與平台'],
     socials: {
@@ -120,7 +120,7 @@ const CANDIDATES_DATA = [
     position: '臺中市長參選人',
     region: '臺中市',
     slogan: '溫柔堅毅，行動破風，讓台中更純粹美好！',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '何',
     policies: ['南屯總部露營公共友善空間', '捷運藍線與環線無縫接軌', '國中小營養午餐免費', '大台中產業創新加速'],
     socials: {
@@ -134,7 +134,7 @@ const CANDIDATES_DATA = [
     position: '臺中市長參選人',
     region: '臺中市',
     slogan: '立足台中，放眼國際，啟動市政新速度！',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '江',
     policies: ['旗艦城市工作站加速政見', '山海屯城均衡建設發展', '台中巨蛋與綠美圖如期完工', '國際新創人才育成中心'],
     socials: {
@@ -150,7 +150,7 @@ const CANDIDATES_DATA = [
     position: '臺南市長參選人',
     region: '臺南市',
     slogan: '台南400年第一位女市長，福利六都齊！',
-    avatar: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '陳',
     policies: ['福利六都齊全方位照護', '科技三軸（農業/半導體AI/醫療）', '南科三期聯外交通系統', '歷史街區創生振興'],
     socials: {
@@ -164,7 +164,7 @@ const CANDIDATES_DATA = [
     position: '臺南市長參選人',
     region: '臺南市',
     slogan: '藍白合力翻轉台南，我只做四年！',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '謝',
     policies: ['生孩供房「婚育宅」政策', '0至6歲健保全額免費', '監督台南重大工程與弊案', '只做四年競選誠諾'],
     socials: {
@@ -180,7 +180,7 @@ const CANDIDATES_DATA = [
     position: '高雄市長參選人',
     region: '高雄市',
     slogan: '北高連線，溫暖承擔，給高雄新選擇！',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '柯',
     policies: ['青年發言人團隊新世代觀點', '空氣品質治理目標提升', '教育與青年創業發展特區', '南高雄商圈再造工程'],
     socials: {
@@ -194,7 +194,7 @@ const CANDIDATES_DATA = [
     position: '高雄市長參選人',
     region: '高雄市',
     slogan: '挺瑞隆、拚過半，延續陳其邁五星市政！',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '賴',
     policies: ['接棒延續陳其邁市政建設', '左營高鐵科技門戶計畫', '半導體S廊帶深度串聯', '國際演唱會與觀光經濟拓展'],
     socials: {
@@ -210,7 +210,7 @@ const CANDIDATES_DATA = [
     position: '基隆市長（爭取連任）',
     region: '基隆市',
     slogan: '基隆有愛，為了下一代！',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '謝',
     policies: ['藍白合作打造友善城市', '基隆捷運進度加速落實', '行人友善交通綠色通道', '港區親子娛樂空間擴建'],
     socials: {
@@ -224,7 +224,7 @@ const CANDIDATES_DATA = [
     position: '基隆市長參選人',
     region: '基隆市',
     slogan: '新世代接棒，打造大基隆新願景！',
-    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '童',
     policies: ['延續林右昌時代市政宏規', '北北基桃一小時生活圈整合', '老舊街區再生與文旅發展', '基隆青年創業與在地就業'],
     socials: {
@@ -240,7 +240,7 @@ const CANDIDATES_DATA = [
     position: '新竹市長（藍白支持連任）',
     region: '新竹市',
     slogan: '科技新竹，智慧風城，藍白合力為新竹！',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '高',
     policies: ['竹科交通瓶頸智慧改善', '通學步道校園安全計畫', '智慧教育AI數位學習', '跨黨派合作治理市政'],
     socials: {
@@ -254,7 +254,7 @@ const CANDIDATES_DATA = [
     position: '新竹市長參選人',
     region: '新竹市',
     slogan: '健康永續，科技專業，大新竹再躍進！',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '莊',
     policies: ['大新竹輕軌整體規劃', '生醫科技產業聚落深化', '幼兒照護與托育量能擴增', '公共工程透明誠信監管'],
     socials: {
@@ -270,7 +270,7 @@ const CANDIDATES_DATA = [
     position: '宜蘭縣長參選人',
     region: '宜蘭縣',
     slogan: '議會地方攜手，拚出宜蘭新格局！',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '吳',
     policies: ['高鐵延伸宜蘭進度跟進', '全縣馬拉松基層掃街拜訪', '農業產銷與休閒觀光升級', '在地青年安心成家專案'],
     socials: {
@@ -286,7 +286,7 @@ const CANDIDATES_DATA = [
     position: '彰化縣長參選人',
     region: '彰化縣',
     slogan: '盧秀燕站台推薦，團結建設大彰化！',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    avatar: null,
     initials: '魏',
     policies: ['彰化鐵路高架化全力促成', '中彰投區域聯防治理', '精密機械產業智慧轉型', '農村長者日照照護網絡'],
     socials: {

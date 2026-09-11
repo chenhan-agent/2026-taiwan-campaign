@@ -1,5 +1,6 @@
 /**
  * 2026 臺灣縣市長選舉 | 主應用程式邏輯 (App Logic)
+ * 整合 Lucide Icons 與全新 Monogram 候選人識別系統
  */
 
 let allEvents = [...EVENTS_DATA];
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initNavTabs();
   initFilterListeners();
+  initQuickRegionPills();
   initModals();
   initFormSubmit();
   
@@ -17,11 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderEvents();
   renderCandidates();
   renderBookmarks();
-  
-  if (window.lucide) {
-    lucide.createIcons();
-  }
+  initCountdown();
+
+  refreshLucideIcons();
 });
+
+function refreshLucideIcons() {
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
 
 /* --- Theme Handler --- */
 function initTheme() {
@@ -38,7 +45,22 @@ function initTheme() {
     document.documentElement.classList.toggle('dark');
     const isDark = document.documentElement.classList.contains('dark');
     localStorage.setItem('elect_theme', isDark ? 'dark' : 'light');
+    if (typeof updateTileLayer === 'function') {
+      updateTileLayer();
+    }
   });
+}
+
+/* --- Countdown Timer --- */
+function initCountdown() {
+  const countdownEl = document.getElementById('hero-countdown-days');
+  if (!countdownEl) return;
+
+  const electionDate = new Date('2026-11-28T08:00:00+08:00');
+  const currentDate = new Date('2026-09-11T14:30:00+08:00');
+  const diffTime = electionDate - currentDate;
+  const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+  countdownEl.innerText = diffDays;
 }
 
 /* --- Navigation Tabs Handler --- */
@@ -62,6 +84,8 @@ function initNavTabs() {
         resizeMap();
         updateMapMarkers(getFilteredEvents());
       }
+
+      refreshLucideIcons();
     });
   });
 }
@@ -83,6 +107,7 @@ function initFilterListeners() {
     } else {
       btnClearSearch.classList.add('hidden');
     }
+    syncQuickPills(selectRegion.value);
     renderEvents();
   };
 
@@ -101,6 +126,35 @@ function initFilterListeners() {
   btnReset.addEventListener('click', resetAllFilters);
 }
 
+function initQuickRegionPills() {
+  const pills = document.querySelectorAll('.quick-pill');
+  const selectRegion = document.getElementById('select-region');
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const region = pill.getAttribute('data-region');
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      if (selectRegion) {
+        selectRegion.value = region;
+      }
+      renderEvents();
+    });
+  });
+}
+
+function syncQuickPills(currentRegion) {
+  const pills = document.querySelectorAll('.quick-pill');
+  pills.forEach(pill => {
+    if (pill.getAttribute('data-region') === currentRegion) {
+      pill.classList.add('active');
+    } else {
+      pill.classList.remove('active');
+    }
+  });
+}
+
 function resetAllFilters() {
   document.getElementById('input-search').value = '';
   document.getElementById('select-region').value = 'all';
@@ -109,6 +163,7 @@ function resetAllFilters() {
   document.getElementById('select-date').value = 'all';
   document.getElementById('select-sort').value = 'date-asc';
   document.getElementById('btn-clear-search').classList.add('hidden');
+  syncQuickPills('all');
   renderEvents();
 }
 
@@ -123,7 +178,6 @@ function getFilteredEvents() {
   const todayStr = '2026-09-12';
 
   let filtered = allEvents.filter(evt => {
-    // Search Query
     if (query) {
       const matchSearch = 
         evt.title.toLowerCase().includes(query) ||
@@ -134,14 +188,10 @@ function getFilteredEvents() {
       if (!matchSearch) return false;
     }
 
-    // Region
     if (region !== 'all' && evt.region !== region) return false;
-    // Party
     if (party !== 'all' && evt.party !== party) return false;
-    // Type
     if (type !== 'all' && evt.type !== type) return false;
 
-    // Date Filter
     if (dateFilter === 'today' && evt.date !== todayStr) return false;
     if (dateFilter === 'tomorrow' && evt.date !== '2026-09-13') return false;
     if (dateFilter === 'this-week') {
@@ -154,7 +204,6 @@ function getFilteredEvents() {
     return true;
   });
 
-  // Sorting
   filtered.sort((a, b) => {
     if (sort === 'date-asc') return a.date.localeCompare(b.date);
     if (sort === 'date-desc') return b.date.localeCompare(a.date);
@@ -163,6 +212,23 @@ function getFilteredEvents() {
   });
 
   return filtered;
+}
+
+/* --- Candidate Monogram Avatar Generator --- */
+function getCandidateAvatarHTML(cand, size = 'md') {
+  const name = cand?.name || cand?.candidateName || '選';
+  const initial = cand?.initials || name.substring(0, 1);
+  const party = cand?.party || '無黨籍';
+  const partyStyle = PARTY_COLORS[party] || PARTY_COLORS['無黨籍'];
+  const gradient = partyStyle.gradient || 'linear-gradient(135deg, #475569 0%, #64748b 100%)';
+  const hex = partyStyle.hex || '#64748b';
+
+  return `
+    <div class="cand-monogram-badge size-${size}" style="background: ${gradient};" title="${name} (${party})">
+      <span class="cand-char">${initial}</span>
+      <span class="cand-party-dot" style="background: ${hex};"></span>
+    </div>
+  `;
 }
 
 /* --- Render Functions --- */
@@ -177,22 +243,20 @@ function renderEvents() {
   const emptyState = document.getElementById('no-events-placeholder');
   const resultCount = document.getElementById('result-count');
 
-  resultCount.innerText = `${events.length} 項結果`;
+  resultCount.innerText = `${events.length} 場行程`;
 
   if (events.length === 0) {
     grid.innerHTML = '';
     emptyState.classList.remove('hidden');
+    refreshLucideIcons();
     return;
   }
 
   emptyState.classList.add('hidden');
   grid.innerHTML = events.map(evt => createEventCardHTML(evt)).join('');
 
-  if (window.lucide) {
-    lucide.createIcons();
-  }
+  refreshLucideIcons();
 
-  // Update map if active
   const activeTab = document.querySelector('.nav-tab.active')?.getAttribute('data-target');
   if (activeTab === 'tab-map') {
     updateMapMarkers(events);
@@ -202,37 +266,41 @@ function renderEvents() {
 function createEventCardHTML(evt) {
   const isBookmarked = bookmarkedEventIds.includes(evt.id);
   const partyStyle = PARTY_COLORS[evt.party] || PARTY_COLORS['無黨籍'];
-  const cand = allCandidates.find(c => c.id === evt.candidateId) || {};
-  const avatarUrl = cand.avatar;
-  const initial = cand.initials || evt.candidateName.substring(0, 1);
+  const cand = allCandidates.find(c => c.id === evt.candidateId) || {
+    name: evt.candidateName,
+    party: evt.party,
+    position: evt.position,
+    initials: evt.candidateName.substring(0, 1)
+  };
 
   return `
     <article class="event-card card" id="card-${evt.id}">
       <div class="event-card-header">
-        <span class="party-badge" style="color: ${partyStyle.hex}; border-color: ${partyStyle.hex}; background: ${partyStyle.bg}">
-          ${evt.party}
-        </span>
-        <span class="type-badge">${evt.type}</span>
-        ${evt.verified ? `<span class="status-badge"><i data-lucide="check-circle" style="width:12px;height:12px;display:inline;"></i> 官方</span>` : ''}
+        <div class="badge-group">
+          <span class="party-badge" style="color: ${partyStyle.hex}; border-color: ${partyStyle.hex}; background: ${partyStyle.bg}">
+            ${evt.party}
+          </span>
+          <span class="type-badge">
+            <i data-lucide="tag"></i> ${evt.type}
+          </span>
+        </div>
+        ${evt.verified ? `<span class="status-badge"><i data-lucide="badge-check"></i> 官方認證</span>` : ''}
       </div>
 
       <h4 class="event-title" onclick="openEventDetailModal('${evt.id}')">${evt.title}</h4>
 
       <div class="candidate-mini-info">
-        ${avatarUrl ? 
-          `<img src="${avatarUrl}" alt="${evt.candidateName}" class="cand-avatar">` : 
-          `<div class="cand-avatar">${initial}</div>`
-        }
+        ${getCandidateAvatarHTML(cand, 'md')}
         <div class="cand-meta">
           <span class="cand-name">${evt.candidateName}</span>
-          <span class="cand-pos">${evt.position} (${evt.region})</span>
+          <span class="cand-pos">${evt.position} · ${evt.region} ${evt.district}</span>
         </div>
       </div>
 
       <div class="event-info-list">
         <div class="event-info-item">
           <i data-lucide="calendar"></i>
-          <span>${evt.date} (${getWeekday(evt.date)}) ${evt.time}</span>
+          <span>${evt.date} (${getWeekday(evt.date)}) · ${evt.time}</span>
         </div>
         <div class="event-info-item">
           <i data-lucide="map-pin"></i>
@@ -245,7 +313,7 @@ function createEventCardHTML(evt) {
           <i data-lucide="eye"></i> 查看詳情
         </button>
         <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${evt.id}')">
-          <i data-lucide="bookmark"></i> ${isBookmarked ? '已收藏' : '收藏'}
+          <i data-lucide="bookmark"></i> ${isBookmarked ? '已關注' : '關注行程'}
         </button>
       </div>
     </article>
@@ -262,38 +330,59 @@ function renderCandidates() {
       <div class="candidate-card card">
         <div>
           <div class="cand-card-top">
-            <img src="${cand.avatar}" alt="${cand.name}" class="cand-large-avatar">
+            ${getCandidateAvatarHTML(cand, 'lg')}
             <div class="cand-details">
-              <h4>${cand.name}</h4>
+              <h4>${cand.name} <span class="badge" style="font-size:11px; font-weight:600; background:var(--primary-light); color:var(--primary);">${cand.region}</span></h4>
               <span class="party-badge" style="color: ${partyStyle.hex}; border-color: ${partyStyle.hex}; background: ${partyStyle.bg}">
                 ${cand.party}
               </span>
-              <p class="cand-pos" style="margin-top: 4px;">${cand.position}</p>
-              <p class="cand-slogan">「${cand.slogan}」</p>
+              <div class="cand-pos-chip">${cand.position}</div>
             </div>
           </div>
 
+          <div class="cand-slogan-box">
+            「${cand.slogan}」
+          </div>
+
           <div class="policy-tags">
-            ${cand.policies.map(p => `<span class="policy-tag"><i data-lucide="check" style="width:10px;height:10px;display:inline;"></i> ${p}</span>`).join('')}
+            ${cand.policies.map(p => `<span class="policy-tag"><i data-lucide="check"></i> ${p}</span>`).join('')}
           </div>
         </div>
 
         <div>
-          <p class="sub-text"><i data-lucide="calendar" style="width:14px;height:14px;display:inline;"></i> 登錄行程：<strong>${countEvents} 場</strong></p>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 0.75rem;">
+          <div class="cand-card-footer">
+            <span class="sub-text"><i data-lucide="calendar-days"></i> 公開行程：<strong>${countEvents} 場</strong></span>
             <button class="btn btn-outline btn-sm" onclick="filterByCandidate('${cand.name}')">
-              <i data-lucide="search"></i> 查行程
+              <i data-lucide="calendar"></i> 查行程
             </button>
+          </div>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 0.75rem;">
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">官方社群傳送門</span>
             <div class="cand-socials">
-              ${cand.socials.facebook ? `<a href="${cand.socials.facebook}" target="_blank" class="social-icon" title="Facebook"><i data-lucide="facebook"></i></a>` : ''}
-              ${cand.socials.instagram ? `<a href="${cand.socials.instagram}" target="_blank" class="social-icon" title="Instagram"><i data-lucide="instagram"></i></a>` : ''}
-              ${cand.socials.youtube ? `<a href="${cand.socials.youtube}" target="_blank" class="social-icon" title="YouTube"><i data-lucide="video"></i></a>` : ''}
+              ${cand.socials?.facebook ? `
+                <a href="${cand.socials.facebook}" target="_blank" rel="noopener" class="social-link" title="Facebook 官方專頁">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>` : ''
+              }
+              ${cand.socials?.instagram ? `
+                <a href="${cand.socials.instagram}" target="_blank" rel="noopener" class="social-link" title="Instagram 官方帳號">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                </a>` : ''
+              }
+              ${cand.socials?.threads ? `
+                <a href="${cand.socials.threads}" target="_blank" rel="noopener" class="social-link" title="Threads 官方動態">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+                </a>` : ''
+              }
             </div>
           </div>
         </div>
       </div>
     `;
   }).join('');
+
+  refreshLucideIcons();
 }
 
 function filterByCandidate(candidateName) {
@@ -314,15 +403,13 @@ function renderBookmarks() {
   if (bookmarkedEvents.length === 0) {
     grid.innerHTML = '';
     emptyState.classList.remove('hidden');
+    refreshLucideIcons();
     return;
   }
 
   emptyState.classList.add('hidden');
   grid.innerHTML = bookmarkedEvents.map(evt => createEventCardHTML(evt)).join('');
-
-  if (window.lucide) {
-    lucide.createIcons();
-  }
+  refreshLucideIcons();
 }
 
 function toggleBookmark(eventId) {
@@ -361,6 +448,7 @@ function initModals() {
 
   btnSubmitEvent.addEventListener('click', () => {
     submitModal.classList.remove('hidden');
+    refreshLucideIcons();
   });
 }
 
@@ -384,13 +472,14 @@ function openEventDetailModal(eventId) {
   document.getElementById('modal-event-address').innerText = evt.address;
   document.getElementById('modal-event-desc').innerText = evt.description;
 
-  const cand = allCandidates.find(c => c.id === evt.candidateId);
+  const cand = allCandidates.find(c => c.id === evt.candidateId) || {
+    name: evt.candidateName,
+    party: evt.party,
+    position: evt.position,
+    initials: evt.candidateName.substring(0, 1)
+  };
   const modalAvatar = document.getElementById('modal-candidate-avatar');
-  if (cand && cand.avatar) {
-    modalAvatar.innerHTML = `<img src="${cand.avatar}" alt="${cand.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-  } else {
-    modalAvatar.innerHTML = `<div class="cand-avatar" style="width:100%;height:100%;">${evt.candidateName.substring(0,1)}</div>`;
-  }
+  modalAvatar.innerHTML = getCandidateAvatarHTML(cand, 'lg');
 
   // Google Calendar URL Generator
   const gcalBtn = document.getElementById('btn-add-gcal');
@@ -400,17 +489,14 @@ function openEventDetailModal(eventId) {
   // Bookmark Button in Modal
   const bookmarkBtn = document.getElementById('btn-modal-bookmark');
   const isBookmarked = bookmarkedEventIds.includes(evt.id);
-  bookmarkBtn.innerHTML = `<i data-lucide="bookmark"></i> ${isBookmarked ? '已收藏行程' : '收藏此行程'}`;
+  bookmarkBtn.innerHTML = `<i data-lucide="bookmark"></i> ${isBookmarked ? '已收藏此行程' : '收藏此行程'}`;
   bookmarkBtn.onclick = () => {
     toggleBookmark(evt.id);
     openEventDetailModal(evt.id);
   };
 
   document.getElementById('modal-event-detail').classList.remove('hidden');
-
-  if (window.lucide) {
-    lucide.createIcons();
-  }
+  refreshLucideIcons();
 }
 
 function generateGoogleCalendarUrl(evt) {
@@ -418,8 +504,8 @@ function generateGoogleCalendarUrl(evt) {
   const startTimeStr = cleanDate + 'T090000';
   const endTimeStr = cleanDate + 'T120000';
 
-  const title = encodeURIComponent(`【2026縣市長競選行程】${evt.candidateName} - ${evt.title}`);
-  const details = encodeURIComponent(`縣市長參選人：${evt.candidateName} (${evt.party})\n活動類型：${evt.type}\n說明：${evt.description}`);
+  const title = encodeURIComponent(`【2026百里侯大選】${evt.candidateName} - ${evt.title}`);
+  const details = encodeURIComponent(`參選人：${evt.candidateName} (${evt.party})\n活動類型：${evt.type}\n說明：${evt.description}`);
   const location = encodeURIComponent(`${evt.locationName}, ${evt.address}`);
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTimeStr}/${endTimeStr}&details=${details}&location=${location}`;

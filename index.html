@@ -64,20 +64,39 @@
     <!-- Hero / Stats Banner -->
     <section class="hero-banner">
       <div class="hero-content">
-        <h2>2026 縣市長大選動態：掌握全台百里侯競選焦點</h2>
-        <p>完整收錄全台 22 縣市（直轄市與縣市）主要候選人最新公開造勢、掃街、政見發表與社群直播。</p>
+        <div class="hero-badge">
+          <i data-lucide="sparkles"></i> 2026 臺灣百里侯選戰情報中心
+        </div>
+        <h2>2026 臺灣縣市長選舉 · 競選動態與行程指南</h2>
+        <p>全台 22 縣市百里侯候選人最新公開造勢、市場掃街、重大政見發表會與官方社群動態全景匯整。</p>
         <div class="hero-stats">
           <div class="stat-item">
-            <span class="stat-number" id="stat-total-events">0</span>
-            <span class="stat-label">公開造勢行程</span>
+            <div class="stat-icon"><i data-lucide="calendar-days"></i></div>
+            <div class="stat-info">
+              <span class="stat-number" id="stat-total-events">0</span>
+              <span class="stat-label">公開造勢行程</span>
+            </div>
           </div>
           <div class="stat-item">
-            <span class="stat-number" id="stat-total-candidates">0</span>
-            <span class="stat-label">縣市長參選人</span>
+            <div class="stat-icon"><i data-lucide="users"></i></div>
+            <div class="stat-info">
+              <span class="stat-number" id="stat-total-candidates">0</span>
+              <span class="stat-label">縣市長參選人</span>
+            </div>
           </div>
           <div class="stat-item">
-            <span class="stat-number" id="stat-total-regions">22</span>
-            <span class="stat-label">臺灣縣市涵蓋</span>
+            <div class="stat-icon"><i data-lucide="map-pin"></i></div>
+            <div class="stat-info">
+              <span class="stat-number" id="stat-total-regions">22</span>
+              <span class="stat-label">臺灣縣市涵蓋</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon"><i data-lucide="clock"></i></div>
+            <div class="stat-info">
+              <span class="stat-number" id="hero-countdown-days">78</span>
+              <span class="stat-label">距離 11/28 投票日倒數(天)</span>
+            </div>
           </div>
         </div>
       </div>
@@ -92,6 +111,21 @@
           <i data-lucide="search" class="search-icon"></i>
           <input type="text" id="input-search" placeholder="搜尋縣市長姓名、行政區、造勢場地關鍵字 (例如：蔣萬安、板橋第一運動場、左營舊城)...">
           <button id="btn-clear-search" class="btn-clear hidden">&times;</button>
+        </div>
+
+        <!-- Quick Region Filter Chips -->
+        <div class="quick-regions">
+          <span class="quick-pill-label"><i data-lucide="compass"></i> 快速切換：</span>
+          <button class="quick-pill active" data-region="all">全台 22 縣市</button>
+          <button class="quick-pill" data-region="臺北市">臺北市</button>
+          <button class="quick-pill" data-region="新北市">新北市</button>
+          <button class="quick-pill" data-region="桃園市">桃園市</button>
+          <button class="quick-pill" data-region="臺中市">臺中市</button>
+          <button class="quick-pill" data-region="臺南市">臺南市</button>
+          <button class="quick-pill" data-region="高雄市">高雄市</button>
+          <button class="quick-pill" data-region="基隆市">基隆市</button>
+          <button class="quick-pill" data-region="新竹市">新竹市</button>
+          <button class="quick-pill" data-region="宜蘭縣">宜蘭縣</button>
         </div>
 
         <div class="filter-controls">
