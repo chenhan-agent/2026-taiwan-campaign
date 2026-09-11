@@ -8,7 +8,35 @@ Thumbs.db
 .vscode/
 .idea/
 
-# CLI & Environment logs
+# CLI, System & Environment files
 .gemini/
+.agents/
+.cache/
+.codex/
+.codex-openrouter/
+.config/
+.copilot/
+.local/
+.oh-my-zsh/
+.openab/
+.ssh/
+.tmux/
+.vim/
+.*
+!/.gitignore
+
 *.log
 scratch/
+bin/
+agents/
+codex/
+dotfiles/
+menu/
+openab/
+skills/
+australia*
+handoff.md
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+bin
