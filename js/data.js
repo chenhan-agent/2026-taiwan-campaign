@@ -34,13 +34,19 @@ const CANDIDATES_DATA = [
     party: '民主進步黨',
     position: '臺北市長參選人',
     region: '臺北市',
-    slogan: '打造可持續運轉的城市生態系！',
+    slogan: 'SOON 順，台北順起來！打造可持續運轉的城市生態系。',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
     initials: '沈',
-    policies: ['永續城市生態系營造', '智慧交通人本路網', '青年友善托育與居住', '數位防衛與韌性首都'],
+    policies: [
+      '台北社福藍圖：敬老卡升級城市探索護照、健身小巴與到宅修繕',
+      '兒少健康守護：0至6歲免費腸病毒疫苗、0至18歲親子同行卡',
+      '壯年支持計畫：50歲以上皮蛇疫苗補助、職場友善政策2.0',
+      '數位防衛與人本韌性首都構建'
+    ],
     socials: {
       facebook: 'https://www.facebook.com/pumashen',
-      threads: 'https://www.threads.net/@puma.shen'
+      threads: 'https://www.threads.net/@pumashen',
+      instagram: 'https://www.instagram.com/pumashen'
     }
   },
 
@@ -71,8 +77,8 @@ const CANDIDATES_DATA = [
     policies: ['開箱新北藏寶計畫', '河左岸高科技產業走廊', '公托幼兒托育全面倍增', '青年共創藝文生活圈'],
     socials: {
       facebook: 'https://www.facebook.com/chiaohui.su',
-      instagram: 'https://www.instagram.com/chiaohui_su',
-      threads: 'https://www.threads.net/@chiaohui_su'
+      instagram: 'https://www.instagram.com/su_chiaohui',
+      threads: 'https://www.threads.net/@su_chiaohui'
     }
   },
 
@@ -578,5 +584,52 @@ const EVENTS_DATA = [
     status: 'confirmed',
     verified: true,
     isPopular: true
+  },
+
+  // --- 臺北市：蔣萬安捷運信義東延段廣慈/奉天宮站完工視察 ---
+  {
+    id: 'evt-tp-214',
+    candidateId: 'cand-tp-jiang',
+    candidateName: '蔣萬安',
+    party: '中國國民黨',
+    position: '臺北市長（爭取連任）',
+    region: '臺北市',
+    district: '信義區',
+    title: '【重大市政成果】捷運信義東延段「廣慈/奉天宮站」完工通車剪綵與祈福',
+    type: '市政行程',
+    date: '2026-09-15',
+    time: '09:30 - 11:30',
+    locationName: '捷運廣慈/奉天宮站 1號出口廣場',
+    address: '臺北市信義區大道路與福德街口',
+    lat: 25.0392,
+    lng: 121.5830,
+    description: '蔣萬安官方IG特別發布通車倒數！親自率領捷運工程團隊視察廣慈/奉天宮站完工成果，並至在地奉天宮參拜祈求捷運營運平安順利，與在地里長和市民共同見證東延段歷史時刻。',
+    status: 'confirmed',
+    verified: true,
+    isPopular: true
+  },
+
+  // --- 臺北市：沈伯洋「台北社福藍圖」首場政策發布與青年社福座談 ---
+  {
+    id: 'evt-tp-215',
+    candidateId: 'cand-tp-shen',
+    candidateName: '沈伯洋',
+    party: '民主進步黨',
+    position: '臺北市長參選人',
+    region: '臺北市',
+    district: '大安區',
+    title: '【SOON 順 台北順起來】台北社福藍圖政策發表與長照團體對談',
+    type: '政見發表',
+    date: '2026-09-16',
+    time: '14:00 - 16:30',
+    locationName: '臺大校友會館 4樓會議廳',
+    address: '臺北市中正區濟南路一段2-1號',
+    lat: 25.0423,
+    lng: 121.5204,
+    description: '沈伯洋於Threads最新公布「台北社福藍圖」核心政見！針對老舊公寓爬梯機、到宅修繕服務團、50歲以上公費皮蛇疫苗、0-6歲腸病毒疫苗與敬老卡升級「城市探索護照」進行完整政策發表與專業社福座談。',
+    status: 'confirmed',
+    verified: true,
+    isPopular: true
   }
 ];
+

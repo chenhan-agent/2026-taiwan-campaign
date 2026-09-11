@@ -1,6 +1,8 @@
 # Node & dependencies
 node_modules/
 .npm/
+scripts/node_modules/
+scripts/output/
 
 # OS & IDE files
 .DS_Store
