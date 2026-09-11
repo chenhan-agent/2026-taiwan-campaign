@@ -161,7 +161,7 @@ function resetAllFilters() {
   document.getElementById('select-party').value = 'all';
   document.getElementById('select-type').value = 'all';
   document.getElementById('select-date').value = 'all';
-  document.getElementById('select-sort').value = 'date-desc';
+  document.getElementById('select-sort').value = 'upcoming-first';
   document.getElementById('btn-clear-search').classList.add('hidden');
   syncQuickPills('all');
   renderEvents();
@@ -209,6 +209,14 @@ function getFilteredEvents() {
   });
 
   filtered.sort((a, b) => {
+    if (sort === 'upcoming-first') {
+      const aUpcoming = a.status === 'confirmed' || a.date > todayStr;
+      const bUpcoming = b.status === 'confirmed' || b.date > todayStr;
+      if (aUpcoming && !bUpcoming) return -1;
+      if (!aUpcoming && bUpcoming) return 1;
+      if (aUpcoming) return a.date.localeCompare(b.date);
+      return b.date.localeCompare(a.date);
+    }
     if (sort === 'date-asc') return a.date.localeCompare(b.date);
     if (sort === 'date-desc') return b.date.localeCompare(a.date);
     if (sort === 'candidate') return a.region.localeCompare(b.region, 'zh-TW') || a.candidateName.localeCompare(b.candidateName, 'zh-TW');
@@ -351,16 +359,25 @@ function renderCandidates() {
   grid.innerHTML = allCandidates.map(cand => {
     const partyStyle = PARTY_COLORS[cand.party] || PARTY_COLORS['無黨籍'];
     const countEvents = allEvents.filter(e => e.candidateId === cand.id).length;
-    const candUpcoming = allEvents.filter(e => e.candidateId === cand.id).slice(0, 2);
+    const candEvents = allEvents.filter(e => e.candidateId === cand.id);
+    candEvents.sort((a, b) => {
+      const aUpcoming = a.status === 'confirmed' || a.date >= '2026-09-11';
+      const bUpcoming = b.status === 'confirmed' || b.date >= '2026-09-11';
+      if (aUpcoming && !bUpcoming) return -1;
+      if (!aUpcoming && bUpcoming) return 1;
+      if (aUpcoming) return a.date.localeCompare(b.date);
+      return b.date.localeCompare(a.date);
+    });
+    const candUpcoming = candEvents.slice(0, 2);
 
     const upcomingHTML = candUpcoming.length > 0 ? `
       <div class="cand-events-preview">
-        <div class="preview-title"><i data-lucide="calendar"></i> 近期公開造勢與行程：</div>
+        <div class="preview-title"><i data-lucide="calendar"></i> 最新造勢與公開動態：</div>
         <div class="preview-event-list">
           ${candUpcoming.map(e => `
             <div class="preview-event-item" onclick="openEventDetailModal('${e.id}')">
               <span class="preview-event-date">${e.date.substring(5)}</span>
-              <span class="preview-event-title" title="${e.title}">${e.title}</span>
+              <span class="preview-event-title" title="${e.title}">${e.status === 'confirmed' ? '🔥 ' : ''}${e.title}</span>
             </div>
           `).join('')}
         </div>
