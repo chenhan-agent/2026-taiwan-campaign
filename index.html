@@ -198,13 +198,13 @@
 
           <!-- Date Filter -->
           <div class="filter-group">
-            <label for="select-date"><i data-lucide="calendar-days"></i> 行程時間</label>
+            <label for="select-date"><i data-lucide="calendar-days"></i> 行程狀態與日期</label>
             <select id="select-date">
-              <option value="all">所有日期</option>
-              <option value="today">今天</option>
-              <option value="tomorrow">明天</option>
+              <option value="all">全部行程與造勢實錄</option>
+              <option value="upcoming">即將舉行 / 預定行程</option>
+              <option value="today">今天即時動態 (9/11)</option>
+              <option value="completed">歷次造勢與掃街實錄</option>
               <option value="this-week">未來 7 天</option>
-              <option value="weekend">本週末</option>
             </select>
           </div>
 
@@ -223,8 +223,8 @@
           <div class="view-sorter">
             <label for="select-sort">排序：</label>
             <select id="select-sort">
-              <option value="date-asc">日期由近到遠</option>
-              <option value="date-desc">日期由遠到近</option>
+              <option value="date-desc" selected>最新日期在前</option>
+              <option value="date-asc">日期由遠到近</option>
               <option value="candidate">按縣市與候選人</option>
             </select>
           </div>

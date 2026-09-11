@@ -161,7 +161,7 @@ function resetAllFilters() {
   document.getElementById('select-party').value = 'all';
   document.getElementById('select-type').value = 'all';
   document.getElementById('select-date').value = 'all';
-  document.getElementById('select-sort').value = 'date-asc';
+  document.getElementById('select-sort').value = 'date-desc';
   document.getElementById('btn-clear-search').classList.add('hidden');
   syncQuickPills('all');
   renderEvents();
@@ -175,7 +175,7 @@ function getFilteredEvents() {
   const dateFilter = document.getElementById('select-date').value;
   const sort = document.getElementById('select-sort').value;
 
-  const todayStr = '2026-09-12';
+  const todayStr = '2026-09-11';
 
   let filtered = allEvents.filter(evt => {
     if (query) {
@@ -192,13 +192,17 @@ function getFilteredEvents() {
     if (party !== 'all' && evt.party !== party) return false;
     if (type !== 'all' && evt.type !== type) return false;
 
-    if (dateFilter === 'today' && evt.date !== todayStr) return false;
-    if (dateFilter === 'tomorrow' && evt.date !== '2026-09-13') return false;
-    if (dateFilter === 'this-week') {
-      if (evt.date < todayStr || evt.date > '2026-09-18') return false;
+    if (dateFilter === 'upcoming') {
+      return evt.status === 'confirmed' || evt.date >= todayStr;
     }
-    if (dateFilter === 'weekend') {
-      if (evt.date !== '2026-09-12' && evt.date !== '2026-09-13') return false;
+    if (dateFilter === 'today') {
+      return evt.date === todayStr;
+    }
+    if (dateFilter === 'completed') {
+      return evt.status === 'completed' || evt.date < todayStr;
+    }
+    if (dateFilter === 'this-week') {
+      return evt.date >= todayStr && evt.date <= '2026-09-18';
     }
 
     return true;
@@ -282,8 +286,17 @@ function createEventCardHTML(evt) {
           <span class="type-badge">
             <i data-lucide="tag"></i> ${evt.type}
           </span>
+          ${evt.status === 'completed' ? `
+            <span class="status-badge" style="color: #94a3b8; border-color: rgba(148,163,184,0.3); background: rgba(148,163,184,0.08);">
+              <i data-lucide="check-circle-2"></i> 已舉行實錄
+            </span>
+          ` : `
+            <span class="status-badge" style="color: #10b981; border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08);">
+              <i data-lucide="calendar-clock"></i> 即將舉行
+            </span>
+          `}
         </div>
-        ${evt.verified ? `<span class="status-badge"><i data-lucide="badge-check"></i> 官方認證</span>` : ''}
+        ${evt.verified ? `<span class="status-badge"><i data-lucide="badge-check"></i> 出處查核</span>` : ''}
       </div>
 
       <h4 class="event-title" onclick="openEventDetailModal('${evt.id}')">${evt.title}</h4>
