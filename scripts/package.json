@@ -1,0 +1,12 @@
+{
+  "name": "election-campaign-scripts",
+  "version": "1.0.0",
+  "description": "Crawler and monitoring scripts for 2026 Taiwan Campaign events",
+  "main": "fetch_social.js",
+  "scripts": {
+    "fetch": "node fetch_social.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.4.0"
+  }
+}
