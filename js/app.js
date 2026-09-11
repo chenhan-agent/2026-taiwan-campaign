@@ -1,6 +1,6 @@
 /**
  * 2026 臺灣縣市長選舉 | 主應用程式邏輯 (App Logic)
- * 整合 Lucide Icons 與全新 Monogram 候選人識別系統
+ * 深度整合 Lucide Icons 與簡約現代政治人物識別徽章
  */
 
 let allEvents = [...EVENTS_DATA];
@@ -57,7 +57,7 @@ function initCountdown() {
   if (!countdownEl) return;
 
   const electionDate = new Date('2026-11-28T08:00:00+08:00');
-  const currentDate = new Date('2026-09-11T14:30:00+08:00');
+  const currentDate = new Date('2026-09-11T15:00:00+08:00');
   const diffTime = electionDate - currentDate;
   const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
   countdownEl.innerText = diffDays;
@@ -214,19 +214,18 @@ function getFilteredEvents() {
   return filtered;
 }
 
-/* --- Candidate Monogram Avatar Generator --- */
+/* --- Candidate Avatar Badge Generator --- */
 function getCandidateAvatarHTML(cand, size = 'md') {
   const name = cand?.name || cand?.candidateName || '選';
   const initial = cand?.initials || name.substring(0, 1);
   const party = cand?.party || '無黨籍';
   const partyStyle = PARTY_COLORS[party] || PARTY_COLORS['無黨籍'];
-  const gradient = partyStyle.gradient || 'linear-gradient(135deg, #475569 0%, #64748b 100%)';
   const hex = partyStyle.hex || '#64748b';
 
   return `
-    <div class="cand-monogram-badge size-${size}" style="background: ${gradient};" title="${name} (${party})">
-      <span class="cand-char">${initial}</span>
-      <span class="cand-party-dot" style="background: ${hex};"></span>
+    <div class="cand-avatar-frame size-${size}" style="border-color: ${partyStyle.border};" title="${name} (${party})">
+      <span class="cand-char" style="color: ${hex};">${initial}</span>
+      <span class="cand-dot" style="background: ${hex};"></span>
     </div>
   `;
 }
@@ -300,7 +299,11 @@ function createEventCardHTML(evt) {
       <div class="event-info-list">
         <div class="event-info-item">
           <i data-lucide="calendar"></i>
-          <span>${evt.date} (${getWeekday(evt.date)}) · ${evt.time}</span>
+          <span>${evt.date} (${getWeekday(evt.date)})</span>
+        </div>
+        <div class="event-info-item">
+          <i data-lucide="clock"></i>
+          <span>${evt.time}</span>
         </div>
         <div class="event-info-item">
           <i data-lucide="map-pin"></i>
@@ -310,7 +313,7 @@ function createEventCardHTML(evt) {
 
       <div class="event-card-actions">
         <button class="btn btn-outline btn-sm" onclick="openEventDetailModal('${evt.id}')">
-          <i data-lucide="eye"></i> 查看詳情
+          <i data-lucide="arrow-up-right"></i> 查看詳情
         </button>
         <button class="btn-bookmark ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${evt.id}')">
           <i data-lucide="bookmark"></i> ${isBookmarked ? '已關注' : '關注行程'}
@@ -340,7 +343,7 @@ function renderCandidates() {
             </div>
           </div>
 
-          <div class="cand-slogan-box">
+          <div class="cand-slogan-box" style="border-left-color: ${partyStyle.hex};">
             「${cand.slogan}」
           </div>
 
@@ -351,28 +354,28 @@ function renderCandidates() {
 
         <div>
           <div class="cand-card-footer">
-            <span class="sub-text"><i data-lucide="calendar-days"></i> 公開行程：<strong>${countEvents} 場</strong></span>
+            <span class="sub-text"><i data-lucide="calendar"></i> 公開行程：<strong>${countEvents} 場</strong></span>
             <button class="btn btn-outline btn-sm" onclick="filterByCandidate('${cand.name}')">
               <i data-lucide="calendar"></i> 查行程
             </button>
           </div>
           
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 0.75rem;">
-            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">官方社群傳送門</span>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">官方社群</span>
             <div class="cand-socials">
               ${cand.socials?.facebook ? `
                 <a href="${cand.socials.facebook}" target="_blank" rel="noopener" class="social-link" title="Facebook 官方專頁">
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                 </a>` : ''
               }
               ${cand.socials?.instagram ? `
                 <a href="${cand.socials.instagram}" target="_blank" rel="noopener" class="social-link" title="Instagram 官方帳號">
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                 </a>` : ''
               }
               ${cand.socials?.threads ? `
                 <a href="${cand.socials.threads}" target="_blank" rel="noopener" class="social-link" title="Threads 官方動態">
-                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
                 </a>` : ''
               }
             </div>
@@ -489,7 +492,7 @@ function openEventDetailModal(eventId) {
   // Bookmark Button in Modal
   const bookmarkBtn = document.getElementById('btn-modal-bookmark');
   const isBookmarked = bookmarkedEventIds.includes(evt.id);
-  bookmarkBtn.innerHTML = `<i data-lucide="bookmark"></i> ${isBookmarked ? '已收藏此行程' : '收藏此行程'}`;
+  bookmarkBtn.innerHTML = `<i data-lucide="bookmark"></i> ${isBookmarked ? '已關注此行程' : '關注此行程'}`;
   bookmarkBtn.onclick = () => {
     toggleBookmark(evt.id);
     openEventDetailModal(evt.id);
