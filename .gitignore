@@ -1,0 +1,14 @@
+# Node & dependencies
+node_modules/
+.npm/
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# CLI & Environment logs
+.gemini/
+*.log
+scratch/
