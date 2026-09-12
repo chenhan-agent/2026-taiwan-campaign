@@ -50,9 +50,6 @@
         </nav>
 
         <div class="header-actions">
-          <button id="btn-submit-event" class="btn btn-primary btn-sm">
-            <i data-lucide="plus"></i> 通報行程
-          </button>
           <button id="theme-toggle" class="theme-toggle-btn" aria-label="切換深淺模式">
             <i data-lucide="sun" class="sun-icon"></i>
             <i data-lucide="moon" class="moon-icon"></i>
@@ -303,7 +300,6 @@
             <li>22 縣市造勢地圖即時熱點</li>
             <li>一鍵加入 Google 行事曆通知</li>
             <li>候選人官方 FB / IG 社群連結</li>
-            <li>團隊與選民自主通報平台</li>
           </ul>
         </div>
         <div class="footer-col">
@@ -375,96 +371,6 @@
             <i data-lucide="bookmark"></i> 關注此行程
           </button>
         </div>
-      </div>
-    </div>
-
-    <!-- Submit Event Form Modal -->
-    <div id="modal-submit-event" class="modal-overlay hidden">
-      <div class="modal-card card form-card">
-        <button class="modal-close">&times;</button>
-        <h3><i data-lucide="send"></i> 通報 2026 縣市長競選行程</h3>
-        <p class="form-subtext">歡迎競選小編、後援會幹部或熱心選民提供公開的造勢活動行程情報。</p>
-        
-        <form id="form-new-event">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="form-candidate-name">參選人姓名 *</label>
-              <input type="text" id="form-candidate-name" required placeholder="例如：張小明">
-            </div>
-            <div class="form-group">
-              <label for="form-party">提名/推薦政黨 *</label>
-              <select id="form-party" required>
-                <option value="民主進步黨">民主進步黨</option>
-                <option value="中國國民黨">中國國民黨</option>
-                <option value="台灣民眾黨">台灣民眾黨</option>
-                <option value="時代力量">時代力量</option>
-                <option value="無黨籍">無黨籍 / 獨立參選</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="form-region">縣市區域 *</label>
-              <select id="form-region" required>
-                <option value="臺北市">臺北市</option>
-                <option value="新北市">新北市</option>
-                <option value="桃園市">桃園市</option>
-                <option value="臺中市">臺中市</option>
-                <option value="臺南市">臺南市</option>
-                <option value="高雄市">高雄市</option>
-                <option value="基隆市">基隆市</option>
-                <option value="新竹市">新竹市</option>
-                <option value="新竹縣">新竹縣</option>
-                <option value="苗栗縣">苗栗縣</option>
-                <option value="彰化縣">彰化縣</option>
-                <option value="南投縣">南投縣</option>
-                <option value="雲林縣">雲林縣</option>
-                <option value="嘉義市">嘉義市</option>
-                <option value="嘉義縣">嘉義縣</option>
-                <option value="屏東縣">屏東縣</option>
-                <option value="宜蘭縣">宜蘭縣</option>
-                <option value="花蓮縣">花蓮縣</option>
-                <option value="臺東縣">臺東縣</option>
-                <option value="澎湖縣">澎湖縣</option>
-                <option value="金門縣">金門縣</option>
-                <option value="連江縣">連江縣</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="form-type">活動類型 *</label>
-              <select id="form-type" required>
-                <option value="造勢大會">大型造勢晚會</option>
-                <option value="掃街拜票">市場/路口拜票</option>
-                <option value="車隊掃街">車隊車掃拜票</option>
-                <option value="政見發表">政見發表/記者會</option>
-                <option value="社群直播">社群直播對談</option>
-                <option value="座談會">基層客廳會/座談</option>
-              </select>
-            </div>
-            <div class="form-group full-width">
-              <label for="form-event-title">造勢活動主題 *</label>
-              <input type="text" id="form-event-title" required placeholder="例如：新北團結勝選造勢晚會">
-            </div>
-            <div class="form-group">
-              <label for="form-date">日期 *</label>
-              <input type="date" id="form-date" required>
-            </div>
-            <div class="form-group">
-              <label for="form-time">時間 *</label>
-              <input type="text" id="form-time" required placeholder="例如：18:30 - 21:00">
-            </div>
-            <div class="form-group full-width">
-              <label for="form-location">造勢地點與詳細地址 *</label>
-              <input type="text" id="form-location" required placeholder="例如：板橋第一運動場廣場（新北市板橋區...）">
-            </div>
-            <div class="form-group full-width">
-              <label for="form-desc">活動主題與嘉賓亮點</label>
-              <textarea id="form-desc" rows="3" placeholder="簡述造勢亮點、助講嘉賓或參與方式..."></textarea>
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-outline modal-cancel">取消</button>
-            <button type="submit" class="btn btn-primary"><i data-lucide="check"></i> 送出行程通報</button>
-          </div>
-        </form>
       </div>
     </div>
 

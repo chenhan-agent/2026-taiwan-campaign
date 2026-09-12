@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initFilterListeners();
   initQuickRegionPills();
   initModals();
-  initFormSubmit();
   
   updateStats();
   renderEvents();
@@ -520,27 +519,17 @@ function toggleBookmark(eventId) {
 /* --- Modal Logic --- */
 function initModals() {
   const detailModal = document.getElementById('modal-event-detail');
-  const submitModal = document.getElementById('modal-submit-event');
-  const btnSubmitEvent = document.getElementById('btn-submit-event');
 
   document.querySelectorAll('.modal-close, .modal-cancel').forEach(btn => {
     btn.addEventListener('click', () => {
       detailModal.classList.add('hidden');
-      submitModal.classList.add('hidden');
     });
   });
 
-  [detailModal, submitModal].forEach(modal => {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.add('hidden');
-      }
-    });
-  });
-
-  btnSubmitEvent.addEventListener('click', () => {
-    submitModal.classList.remove('hidden');
-    refreshLucideIcons();
+  detailModal.addEventListener('click', (e) => {
+    if (e.target === detailModal) {
+      detailModal.classList.add('hidden');
+    }
   });
 }
 
@@ -649,81 +638,6 @@ function generateGoogleCalendarUrl(evt) {
   const location = encodeURIComponent(`${evt.locationName}, ${evt.address}`);
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTimeStr}/${endTimeStr}&details=${details}&location=${location}`;
-}
-
-/* --- Form Submit Handler --- */
-function initFormSubmit() {
-  const form = document.getElementById('form-new-event');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const candidateName = document.getElementById('form-candidate-name').value;
-    const party = document.getElementById('form-party').value;
-    const region = document.getElementById('form-region').value;
-    const type = document.getElementById('form-type').value;
-    const title = document.getElementById('form-event-title').value;
-    const date = document.getElementById('form-date').value;
-    const time = document.getElementById('form-time').value;
-    const location = document.getElementById('form-location').value;
-    const desc = document.getElementById('form-desc').value;
-
-    const regionCoords = {
-      '臺北市': { lat: 25.033, lng: 121.565 },
-      '新北市': { lat: 25.012, lng: 121.465 },
-      '桃園市': { lat: 24.993, lng: 121.301 },
-      '臺中市': { lat: 24.162, lng: 120.640 },
-      '臺南市': { lat: 22.999, lng: 120.212 },
-      '高雄市': { lat: 22.627, lng: 120.301 },
-      '基隆市': { lat: 25.128, lng: 121.741 },
-      '新竹市': { lat: 24.813, lng: 120.967 },
-      '新竹縣': { lat: 24.838, lng: 121.017 },
-      '苗栗縣': { lat: 24.560, lng: 120.821 },
-      '彰化縣': { lat: 24.081, lng: 120.538 },
-      '南投縣': { lat: 23.915, lng: 120.686 },
-      '雲林縣': { lat: 23.709, lng: 120.431 },
-      '嘉義市': { lat: 23.480, lng: 120.449 },
-      '嘉義縣': { lat: 23.458, lng: 120.292 },
-      '屏東縣': { lat: 22.673, lng: 120.488 },
-      '宜蘭縣': { lat: 24.757, lng: 121.753 },
-      '花蓮縣': { lat: 23.987, lng: 121.601 },
-      '臺東縣': { lat: 22.758, lng: 121.144 },
-      '澎湖縣': { lat: 23.571, lng: 119.579 },
-      '金門縣': { lat: 24.449, lng: 118.376 },
-      '連江縣': { lat: 26.157, lng: 119.951 }
-    };
-
-    const coords = regionCoords[region] || { lat: 25.033, lng: 121.565 };
-
-    const newEvt = {
-      id: 'evt-' + Date.now(),
-      candidateId: 'cand-custom',
-      candidateName,
-      party,
-      position: `${region}長參選人`,
-      region,
-      district: region,
-      title,
-      type,
-      date,
-      time,
-      locationName: location,
-      address: location,
-      lat: coords.lat + (Math.random() - 0.5) * 0.05,
-      lng: coords.lng + (Math.random() - 0.5) * 0.05,
-      description: desc || '由民眾熱心通報之縣市長競選行程。',
-      status: 'submitted',
-      verified: false
-    };
-
-    allEvents.unshift(newEvt);
-    updateStats();
-    renderEvents();
-
-    document.getElementById('modal-submit-event').classList.add('hidden');
-    form.reset();
-
-    alert('通報成功！行程已新增至列表中。');
-  });
 }
 
 /* --- Helpers --- */

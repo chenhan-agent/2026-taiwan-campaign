@@ -69,7 +69,7 @@ const CANDIDATES_DATA = [
     initials: '蘇',
     socials: {
       facebook: 'https://www.facebook.com/chiaohui.su',
-      instagram: 'https://www.instagram.com/su_chiaohui',
+      instagram: 'https://www.instagram.com/su.chiaohui',
       threads: 'https://www.threads.net/@su_chiaohui'
     }
   },
